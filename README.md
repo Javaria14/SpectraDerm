@@ -43,7 +43,7 @@
        https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
     4. Paste that link as the src below — it will play inline with controls on GitHub.
 
-    <video src="PASTE_YOUR_VIDEO_URL_HERE" controls width="100%"></video>
+    <video src="https://github.com/user-attachments/assets/361f7c7d-35b5-4c97-9c19-60450a9bd97a" controls width="100%"></video>
 
   OPTION 2: YouTube (click-through thumbnail, works everywhere incl. npm/PyPI mirrors)
 
@@ -56,7 +56,7 @@
     <img src="docs/assets/demo.gif" width="80%" alt="SpectraDerm demo" />
 -->
 
-<img src="https://img.shields.io/badge/demo%20video-add%20your%20link%20here-orange?style=for-the-badge" alt="Add demo video placeholder" />
+<img src="https://github.com/user-attachments/assets/361f7c7d-35b5-4c97-9c19-60450a9bd97a" />
 
 </div>
 
