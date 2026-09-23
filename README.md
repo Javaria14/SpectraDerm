@@ -33,6 +33,13 @@
 
 <div align="center">
 
+<video src="https://github.com/user-attachments/assets/361f7c7d-35b5-4c97-9c19-60450a9bd97a" controls width="100%"></video>
+
+</div>
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+
 <!--
   HOW TO ADD YOUR DEMO VIDEO — pick one:
 
