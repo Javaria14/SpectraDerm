@@ -190,7 +190,7 @@ The output is a **change/anomaly score**, not a disease probability:
 Change / Anomaly Score: 72 / 100
 ```
 
-This means the observed pattern differs from the relevant reference pattern — **it is not a 72% probability of disease.**
+This means the observed pattern differs from the relevant reference pattern **it is not a 72% probability of disease.**
 
 <p align="right"><a href="#readme-top">back to top ↑</a></p>
 
@@ -216,7 +216,7 @@ Trend visualization becomes more meaningful as more scans accumulate.
 
 ## 📚 RAG Pipeline
 
-Used whenever the user asks **"Why was this flagged?"** — retrieves relevant dermatology evidence and grounds the explanation in it, rather than letting a model free-generate the answer.
+Used whenever the user asks **"Why was this flagged?"** retrieves relevant dermatology evidence and grounds the explanation in it, rather than letting a model free-generate the answer.
 
 ```mermaid
 flowchart TD
@@ -569,7 +569,7 @@ SpectraDerm combines computer vision, spectral AI, feature engineering, machine 
 
 ## 📜 License
 
-This project is currently intended for educational and research purposes. A project-specific license can be added here once finalized.
+This project is currently intended for educational and research purposes.
 
 <div align="center">
 
