@@ -62,7 +62,7 @@
 
 <p align="right"><a href="#readme-top">back to top ↑</a></p>
 
-## 📖 Table of Contents
+## Table of Contents
 
 - [System Architecture](#-system-architecture)
 - [Pipeline Overview](#-pipeline-overview)
