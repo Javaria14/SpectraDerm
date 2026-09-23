@@ -58,15 +58,12 @@
 
 <img src="https://img.shields.io/badge/demo%20video-add%20your%20link%20here-orange?style=for-the-badge" alt="Add demo video placeholder" />
 
-*Swap this placeholder for your walkthrough — see the HTML comment just above in the raw README for exact steps.*
-
 </div>
 
 <p align="right"><a href="#readme-top">back to top ↑</a></p>
 
 ## 📖 Table of Contents
 
-- [Key Features](#-key-features)
 - [System Architecture](#-system-architecture)
 - [Pipeline Overview](#-pipeline-overview)
 - [Spectral Reconstruction](#-spectral-reconstruction)
@@ -90,21 +87,6 @@
 - [Disclaimer](#-disclaimer)
 - [License](#-license)
 
-## ✨ Key Features
-
-- 📷 **RGB Image Analysis** — upload or capture ordinary skin images; image quality is checked before analysis proceeds.
-- 🔍 **Skin & Region Detection** — identifies and localizes the regions that get monitored across scans.
-- 🌈 **RGB-to-Spectral Reconstruction** — generates an AI-estimated spectral representation from a plain RGB image.
-- 🧬 **Multimodal Feature Extraction** — RGB color/texture/shape, estimated spectral features, and temporal/history features.
-- 🤖 **Machine Learning Analysis** — combines the feature set into a model-derived change/anomaly score.
-- 👤 **Personal Baseline** — the first scan sets each user's own reference point.
-- 📈 **Longitudinal Monitoring** — tracks stable, changed, or increasing-change patterns over time.
-- 📚 **RAG-Based Evidence** — grounds explanations in a curated dermatology knowledge base instead of free-generating them.
-- 🧠 **Multi-Agent AI** — Vision, Monitoring, Evidence, Safety, Product, Referral, and Orchestrator agents.
-- 🔌 **MCP Tool Layer** — standardizes how agents call analysis, retrieval, history, referral, and reporting capabilities.
-- 👨‍⚕️ **Dermatologist Referral** — surfaces professional-assessment options when the safety workflow calls for it.
-- 🧴 **General Skincare Guidance** — product-category suggestions that never influence the underlying ML result.
-- 📄 **Structured Final Report** — one report combining image, spectral, ML, historical, evidence, and safety findings.
 
 **User journey:** `Home → Scan → Analysis → Result → History → Explanation → Next Action`
 
@@ -172,7 +154,7 @@ flowchart LR
 
 <p align="right"><a href="#readme-top">back to top ↑</a></p>
 
-## 🌈 Spectral Reconstruction
+## Spectral Reconstruction
 
 SpectraDerm converts an ordinary RGB image into an **AI-estimated spectral representation**, used to derive additional features alongside conventional RGB features.
 
