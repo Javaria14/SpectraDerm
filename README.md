@@ -63,7 +63,11 @@
     <img src="docs/assets/demo.gif" width="80%" alt="SpectraDerm demo" />
 -->
 
-<img src="https://github.com/user-attachments/assets/361f7c7d-35b5-4c97-9c19-60450a9bd97a" />
+## 🎥 Demo
+
+<div align="center">
+
+<video src="https://github.com/user-attachments/assets/a2b7e7aa-b644-4158-b72c-5e0fff3e1a54" controls width="100%"></video>
 
 </div>
 
