@@ -1,76 +1,600 @@
-# SpectraDerm
+<a id="readme-top"></a>
 
-SpectraDerm is a capstone prototype for research-oriented skin monitoring from ordinary RGB images. It is not a medical device and does not diagnose disease.
+<div align="center">
 
-The planned system will assess image quality, work with relevant skin regions, generate **AI-estimated spectral information** from RGB images, compare feature approaches, track change against a personal baseline, retrieve dermatology evidence, and produce an evidence-grounded report. Any estimated spectral output is predicted information, not a hyperspectral or multispectral measurement. Change or anomaly scores are not disease probabilities.
+<!-- Optional: drop a logo at docs/assets/logo.png and uncomment this line -->
+<!-- <img src="docs/assets/logo.png" alt="SpectraDerm logo" width="120" /> -->
 
-## Current phase
+# 🔬 SpectraDerm
 
-This repository currently contains scaffolding only. It contains no datasets, trained models, clinical results, diagnoses, or product recommendations.
+**An AI-powered skin monitoring prototype that turns an ordinary phone photo into a longitudinal signal, no multispectral hardware required.**
 
-## Layout
+![Status](https://img.shields.io/badge/Status-Prototype-FFFFFF?style=for-the-badge&labelColor=5C4A3B)
+![Python](https://img.shields.io/badge/Python-3.10%2B-FFFFFF?style=for-the-badge&labelColor=5C4A3B)
+![License](https://img.shields.io/badge/License-Educational%20Use-FFFFFF?style=for-the-badge&labelColor=5C4A3B)
+
+<!-- Once this is pushed to GitHub, swap YOUR_USERNAME below for live, auto-updating badges -->
+<!--
+![Last Commit](https://img.shields.io/github/last-commit/YOUR_USERNAME/SpectraDerm?style=for-the-badge)
+![Issues](https://img.shields.io/github/issues/YOUR_USERNAME/SpectraDerm?style=for-the-badge)
+![Stars](https://img.shields.io/github/stars/YOUR_USERNAME/SpectraDerm?style=for-the-badge)
+-->
+
+</div>
+
+<br/>
+
+> [!IMPORTANT]
+> SpectraDerm is a **monitoring and awareness** prototype. It does not diagnose skin disease, output a disease probability, or replace a dermatologist. Its spectral output is AI‑*estimated*, not a physical multispectral/hyperspectral measurement.
+
+<br/>
+
+## 🎥 Demo
+
+<div align="center">
+
+<!--
+  HOW TO ADD YOUR DEMO VIDEO — pick one:
+
+  OPTION 1 (recommended): Native, playable GitHub video
+    1. Open any Issue or PR on this repo in your browser (you can close/delete it after).
+    2. Drag-and-drop your demo .mp4 into the comment box.
+    3. GitHub uploads it and gives you a link like:
+       https://github.com/user-attachments/assets/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+    4. Paste that link as the src below — it will play inline with controls on GitHub.
+
+    <video src="PASTE_YOUR_VIDEO_URL_HERE" controls width="100%"></video>
+
+  OPTION 2: YouTube (click-through thumbnail, works everywhere incl. npm/PyPI mirrors)
+
+    <a href="https://youtube.com/watch?v=YOUR_VIDEO_ID">
+      <img src="https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg" width="80%" alt="SpectraDerm demo video" />
+    </a>
+
+  OPTION 3: Looping GIF preview (silent, autoplays, largest file size)
+
+    <img src="docs/assets/demo.gif" width="80%" alt="SpectraDerm demo" />
+-->
+
+<img src="https://img.shields.io/badge/demo%20video-add%20your%20link%20here-orange?style=for-the-badge" alt="Add demo video placeholder" />
+
+*Swap this placeholder for your walkthrough — see the HTML comment just above in the raw README for exact steps.*
+
+</div>
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📖 Table of Contents
+
+- [Key Features](#-key-features)
+- [System Architecture](#-system-architecture)
+- [Pipeline Overview](#-pipeline-overview)
+- [Spectral Reconstruction](#-spectral-reconstruction)
+- [Feature Engineering](#-feature-engineering)
+- [Machine Learning and Change Detection](#-machine-learning-and-change-detection)
+- [Personal Baseline and Longitudinal Monitoring](#-personal-baseline-and-longitudinal-monitoring)
+- [RAG Pipeline](#-rag-pipeline)
+- [Multi-Agent Architecture](#-multi-agent-architecture)
+- [MCP Integration](#-mcp-integration)
+- [Final Report](#-final-report)
+- [Application Flow](#-application-flow)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [Environment Variables](#-environment-variables)
+- [Installation](#-installation)
+- [Testing](#-testing)
+- [Privacy and Safety](#-privacy-and-safety)
+- [Limitations](#-limitations)
+- [Project Goals](#-project-goals)
+- [Team](#-team)
+- [Disclaimer](#-disclaimer)
+- [License](#-license)
+
+## ✨ Key Features
+
+- 📷 **RGB Image Analysis** — upload or capture ordinary skin images; image quality is checked before analysis proceeds.
+- 🔍 **Skin & Region Detection** — identifies and localizes the regions that get monitored across scans.
+- 🌈 **RGB-to-Spectral Reconstruction** — generates an AI-estimated spectral representation from a plain RGB image.
+- 🧬 **Multimodal Feature Extraction** — RGB color/texture/shape, estimated spectral features, and temporal/history features.
+- 🤖 **Machine Learning Analysis** — combines the feature set into a model-derived change/anomaly score.
+- 👤 **Personal Baseline** — the first scan sets each user's own reference point.
+- 📈 **Longitudinal Monitoring** — tracks stable, changed, or increasing-change patterns over time.
+- 📚 **RAG-Based Evidence** — grounds explanations in a curated dermatology knowledge base instead of free-generating them.
+- 🧠 **Multi-Agent AI** — Vision, Monitoring, Evidence, Safety, Product, Referral, and Orchestrator agents.
+- 🔌 **MCP Tool Layer** — standardizes how agents call analysis, retrieval, history, referral, and reporting capabilities.
+- 👨‍⚕️ **Dermatologist Referral** — surfaces professional-assessment options when the safety workflow calls for it.
+- 🧴 **General Skincare Guidance** — product-category suggestions that never influence the underlying ML result.
+- 📄 **Structured Final Report** — one report combining image, spectral, ML, historical, evidence, and safety findings.
+
+**User journey:** `Home → Scan → Analysis → Result → History → Explanation → Next Action`
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart TD
+    A["📷 RGB Image"] --> B["Image Quality Check"]
+    B --> C["Skin / Region Detection"]
+    C --> D["RGB-to-Spectral Reconstruction"]
+    D --> E["RGB Features"]
+    D --> F["Spectral Features"]
+    E --> G["Feature Engine"]
+    F --> G
+    G --> H["Machine Learning"]
+    H --> I["Change / Anomaly Score"]
+    I --> J["Personal Baseline"]
+    J --> K["Temporal Comparison"]
+    K --> L["Agent System"]
+    L --> M["Vision Agent"]
+    L --> N["Monitoring Agent"]
+    L --> O["Evidence Agent"]
+    M --> P["Safety Agent"]
+    N --> P
+    O --> P
+    P --> Q["Product Agent"]
+    P --> R["Referral Agent"]
+    Q --> S["MCP Server"]
+    R --> S
+    S --> T["ML Tools"]
+    S --> U["RAG Tools"]
+    S --> V["External Tools"]
+    T --> W["Final Report"]
+    U --> W
+    V --> W
+
+    style P fill:#e8590c,color:#fff
+    style W fill:#2f9e44,color:#fff
+```
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🔄 Pipeline Overview
+
+A higher-level view of the same journey, stage by stage:
+
+```mermaid
+flowchart LR
+    A["RGB Image"] --> B["Quality + Region Detection"]
+    B --> C["Spectral Reconstruction"]
+    C --> D["Feature Extraction"]
+    D --> E["ML Analysis"]
+    E --> F["Baseline + History"]
+    F --> G["Agent Reasoning"]
+    G --> H["RAG Evidence"]
+    H --> I["Safety Assessment"]
+    I --> J["Referral / Product Guidance"]
+    J --> K["Final Report"]
+
+    style I fill:#e8590c,color:#fff
+    style K fill:#2f9e44,color:#fff
+```
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🌈 Spectral Reconstruction
+
+SpectraDerm converts an ordinary RGB image into an **AI-estimated spectral representation**, used to derive additional features alongside conventional RGB features.
+
+```mermaid
+flowchart LR
+    A["RGB Image<br/>H × W × 3"] --> B["Spectral Reconstruction Model<br/>(MST++)"] --> C["Estimated Spectral Image<br/>H × W × N"]
+```
+
+> [!NOTE]
+> This is explicitly *AI-estimated* spectral information, not an actual multispectral/hyperspectral measurement.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🧬 Feature Engineering
+
+| Category | Examples |
+|---|---|
+| **RGB Features** | Color statistics, texture, shape, local contrast, pigmentation-related features |
+| **Spectral Features** | Band-wise intensity, spectral ratios, spectral differences, regional spectral statistics, spectral signatures |
+| **Temporal Features** | Historical scan information used for longitudinal monitoring and comparison |
+
+The combined feature representation feeds the downstream machine-learning pipeline.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🤖 Machine Learning and Change Detection
+
+SpectraDerm compares an RGB-only baseline against an **RGB + estimated-spectral** representation to test whether the extra spectral signal helps.
+
+The output is a **change/anomaly score**, not a disease probability:
+
+```
+Change / Anomaly Score: 72 / 100
+```
+
+This means the observed pattern differs from the relevant reference pattern — **it is not a 72% probability of disease.**
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 👤 Personal Baseline and Longitudinal Monitoring
+
+Because everyone's skin differs, SpectraDerm builds a **personal** reference rather than comparing against a population average.
+
+```mermaid
+flowchart TD
+    subgraph S1["First Scan"]
+        A["First Scan"] --> B["RGB + Estimated Spectrum"] --> C["Personal Baseline"]
+    end
+    subgraph S2["Every Scan After"]
+        D["Current Scan"] --> F["Difference Analysis"]
+        C --> F
+        F --> G{"Stable / Changed /<br/>Increasing Change"}
+    end
+```
+
+Trend visualization becomes more meaningful as more scans accumulate.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📚 RAG Pipeline
+
+Used whenever the user asks **"Why was this flagged?"** — retrieves relevant dermatology evidence and grounds the explanation in it, rather than letting a model free-generate the answer.
+
+```mermaid
+flowchart TD
+    A["Knowledge Documents"] --> B["Cleaning"]
+    B --> C["Chunking"]
+    C --> D["Embedding<br/>(BAAI/bge-small-en-v1.5)"]
+    D --> E["Local Vector Store"]
+    E --> F["Semantic Retrieval"]
+    F --> G["Relevant Evidence"]
+    G --> H["Evidence-Grounded Explanation"]
+```
+
+The knowledge base covers general dermatology, skin pigmentation, melanin, common skin conditions, warning signs, and situations where professional assessment may help.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🧠 Multi-Agent Architecture
+
+| Agent | Responsibility |
+|---|---|
+| **Vision Agent** | Interprets image, spectral, feature, and ML outputs |
+| **Monitoring Agent** | Handles scan history, comparisons, and trends |
+| **Evidence Agent** | Performs RAG retrieval and evidence-grounded explanations |
+| **Safety Agent** | Performs safety checks and referral logic |
+| **Product Agent** | Handles skincare / product-category guidance |
+| **Referral Agent** | Surfaces dermatologist options |
+| **Orchestrator Agent** | Coordinates the overall workflow |
+
+Splitting responsibilities this way lets each agent be developed, tested, and improved independently.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🔌 MCP Integration
+
+SpectraDerm uses **Model Context Protocol (MCP)** as the standardized tool layer between agents and core capabilities:
+
+```python
+reconstruct_spectrum()
+analyze_skin()
+extract_features()
+calculate_warning_score()
+compare_scans()
+retrieve_evidence()
+get_skin_history()
+find_dermatologists()
+get_partner_products()
+generate_report()
+```
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📄 Final Report
+
+```mermaid
+flowchart LR
+    A["Image Analysis"] --> F["Final SpectraDerm<br/>Report"]
+    B["Spectral Analysis"] --> F
+    C["ML Score"] --> F
+    D["Historical Change"] --> F
+    E["RAG Evidence"] --> F
+    G["Safety Assessment"] --> F
+    H["Recommended Action"] --> F
+
+    style F fill:#2f9e44,color:#fff
+```
+
+The goal is a structured monitoring result — not just a number on a screen.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🖥️ Application Flow
+
+```mermaid
+flowchart TD
+    A["🏠 Home"] --> B["Start Scan"]
+    B --> C["Upload / Capture Image"]
+    C --> D["Analysis"]
+    D --> E["Spectral Reconstruction"]
+    E --> F["Skin Analysis"]
+    F --> G["Result"]
+    G --> H["Highlighted Region"]
+    H --> I["Change / Monitoring Status"]
+    I --> J["Why was this flagged?"]
+    J --> K["Evidence-Grounded Explanation"]
+    K --> L{"Next Action"}
+    L --> M["Continue Monitoring"]
+    L --> N["Consider Professional Assessment"]
+    L --> O["Find Dermatologist"]
+
+    style N fill:#e8590c,color:#fff
+    style O fill:#e8590c,color:#fff
+```
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🛠️ Technology Stack
+
+**Frontend**
+
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+
+**Backend**
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?style=for-the-badge&logo=pydantic&logoColor=white)
+
+**Computer Vision & Deep Learning**
+
+![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
+![Pillow](https://img.shields.io/badge/Pillow-blue?style=for-the-badge)
+
+**Data & Scientific Computing**
+
+![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white)
+![Pandas](https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white)
+![SciPy](https://img.shields.io/badge/SciPy-8CAAE6?style=for-the-badge&logo=scipy&logoColor=white)
+
+**Machine Learning**
+
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white)
+
+**RAG**
+
+![FastEmbed](https://img.shields.io/badge/FastEmbed-BAAI%2Fbge--small--en--v1.5-6f42c1?style=for-the-badge)
+
+**Testing**
+
+![Pytest](https://img.shields.io/badge/Pytest-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+
+<details>
+<summary><strong>Full dependency list</strong></summary>
+
+- **Agents & tools:** custom Python agent architecture, official Python MCP SDK
+- **Storage:** local filesystem-backed JSON metadata, managed image artifacts, local NumPy embedding storage
+- **External integration:** HTTPX, Google Places–oriented dermatologist referral provider
+
+</details>
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📂 Project Structure
+
+<details>
+<summary><strong>Click to expand the directory tree</strong></summary>
 
 ```text
-src/spectraderm/   Python package and future pipeline modules
-data/              Local raw, interim, processed, and external data locations
-models/            Local model artifacts (ignored by Git)
-notebooks/         Exploratory work
-tests/             Automated checks
-docs/              Project documentation
-frontend/          Reserved for a future UI
-config/            Example configuration assets
+SpectraDerm/
+│
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   └── package.json
+│
+├── backend/
+│   ├── agents/
+│   ├── api/
+│   ├── ml/
+│   ├── rag/
+│   ├── mcp/
+│   ├── storage/
+│   ├── reporting/
+│   └── tests/
+│
+├── models/
+│   └── spectral/
+│
+├── data/
+│   └── knowledge/
+│
+├── notebooks/
+├── tests/
+│
+├── .env.example
+├── requirements.txt
+└── README.md
 ```
 
-## Setup
+*The exact structure may vary depending on the current implementation.*
 
-Python 3.10+ (tested on 3.14) and Node 18+. The commands use `npm.cmd` and the
-venv's `python.exe` directly so they work even when PowerShell blocks `.ps1`
-scripts (the default execution policy on many Windows machines).
+</details>
 
-```powershell
-py -m venv .venv
-.\.venv\Scripts\python -m pip install --upgrade pip
-.\.venv\Scripts\python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-.\.venv\Scripts\python -m pip install -r requirements.txt scikit-learn
-.\.venv\Scripts\python -m pip install -e . --no-deps
-Copy-Item .env.example .env   # then set SPECTRADERM_MSTPP_CHECKPOINT=models/mstpp_hyperskin_vis_best_10pairs.pth
-cd frontend; npm.cmd install; cd ..
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## ⚙️ Environment Variables
+
+Create a `.env` file based on the project's environment configuration, for example:
+
+```env
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 ```
 
-## Running the app
+Additional variables may be required depending on which services and deployment environment you enable.
 
-Two terminals, both from the repository root:
+> [!WARNING]
+> Never commit API keys or other secrets to Git.
 
-```powershell
-.\.venv\Scripts\python -m uvicorn spectraderm.api.app:app --port 8000
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🚀 Installation
+
+<details open>
+<summary><strong>1. Clone the repository</strong></summary>
+
+```bash
+git clone <repository-url>
+cd SpectraDerm
 ```
 
-```powershell
-cd frontend; npm.cmd run dev
+</details>
+
+<details open>
+<summary><strong>2. Create a Python virtual environment</strong></summary>
+
+```bash
+python -m venv .venv
 ```
 
-Open http://localhost:5173. The first analysis downloads the FastEmbed model
-(~65 MB) into `models/fastembed_cache` and takes a few extra seconds.
+Activate it:
 
-Users, scans, images, feature snapshots and change records persist under
-`.spectraderm-api-storage/` (relative to the repository, whichever directory
-the server is started from). A change score needs 4 earlier observations of the
-same user; a professional-assessment suggestion needs persistent change across
-observations plus retrieved evidence that supports it.
+| OS | Command |
+|---|---|
+| Windows | `.venv\Scripts\activate` |
+| Linux / macOS | `source .venv/bin/activate` |
 
-## Tests
+</details>
 
-```powershell
-.\.venv\Scripts\python -m pytest
-cd frontend; npm.cmd test
+<details open>
+<summary><strong>3. Install backend dependencies</strong></summary>
+
+```bash
+pip install -r requirements.txt
 ```
 
-The test suite never calls OpenAI or Google Places, even if keys are in `.env`.
+</details>
 
-## Configuration
+<details open>
+<summary><strong>4. Install frontend dependencies</strong></summary>
 
-Use `spectraderm.config.get_settings()` to access project, data, model, and dataset-root paths. The settings default to directories in this repository and may be overridden with the variables in `.env.example`. Set `SPECTRADERM_HYPERSKIN_ROOT` and `SPECTRADERM_UMINHO_HSFD_ROOT` to local or mounted raw-data locations; application code should use those settings instead of hard-coded paths.
+```bash
+cd frontend
+npm install
+cd ..
+```
 
-## Safety boundary
+</details>
 
-Future features must preserve the prototype's safety boundary: no disease diagnosis, no disease-probability framing for change scores, clear AI-estimated spectral terminology, evidence-based escalation to professional assessment where appropriate, and separation of general product categories from ML outputs.
+<details open>
+<summary><strong>5. Configure environment variables</strong></summary>
+
+Create the `.env` file described above.
+
+</details>
+
+<details open>
+<summary><strong>6. Start the backend</strong></summary>
+
+```bash
+uvicorn backend.main:app --reload
+```
+
+</details>
+
+<details open>
+<summary><strong>7. Start the frontend</strong></summary>
+
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will then be available through the Vite development server.
+
+</details>
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🧪 Testing
+
+```bash
+# Backend
+pytest
+
+# Frontend
+npm test
+```
+
+Coverage spans image processing, ML functionality, RAG retrieval, agent behavior, safety logic, MCP tools, referral workflow, frontend components, and end-to-end integration.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🔐 Privacy and Safety
+
+Because SpectraDerm processes skin images, privacy and responsible-use design are core, not an afterthought:
+
+- Pseudonymous user IDs
+- Minimum-necessary information
+- Access controls
+- Secure storage
+- Consent handling
+- Data deletion
+- Safety checks before recommendations or referrals
+
+> [!NOTE]
+> SpectraDerm is **HIPAA-aware / HIPAA-inspired**, but does **not** claim legal HIPAA compliance. Actual compliance depends on the organization, deployment environment, data flows, and applicable jurisdiction.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## ⚠️ Limitations
+
+1. **Estimated spectral information** — the reconstructed spectrum is a model prediction, not a physical measurement.
+2. **Not a diagnostic system** — SpectraDerm does not diagnose skin diseases.
+3. **Change score ≠ disease probability** — a high score means deviation from a reference pattern, nothing more.
+4. **Medical significance isn't guaranteed** — a detected change may or may not be medically significant.
+5. **Prototype status** — this is a capstone prototype, not a clinically validated medical device.
+6. **Professional assessment matters** — concerning or persistent changes may warrant a dermatologist, not just this tool.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 🎯 Project Goals
+
+SpectraDerm combines computer vision, spectral AI, feature engineering, machine learning, longitudinal monitoring, RAG, multi-agent AI, MCP, FastAPI, and React into one end-to-end workflow — exploring how far accessible smartphone imagery and modern AI can go for **skin monitoring and awareness**, without specialized imaging hardware, while clearly separating model-derived observations from medical diagnosis.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 👥 Team
+
+**SpectraDerm — AI/ML Capstone Project**
+
+| Name | Focus |
+|---|---|
+| **Zainab Fatima** | Data, Computer Vision & Spectral AI |
+| **Ayesha Noor** | Machine Learning, RAG & AI Agents |
+| **Javaria Akbar** | Backend, Frontend, Privacy & Testing |
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📌 Disclaimer
+
+> [!WARNING]
+> SpectraDerm is an educational AI/ML capstone prototype for skin monitoring and awareness. It is **not medical advice, a medical diagnosis system, or a replacement for professional dermatological assessment.**
+>
+> If a skin change is persistent, concerning, rapidly changing, painful, bleeding, or otherwise worrying, seek appropriate professional medical advice.
+
+<p align="right"><a href="#readme-top">back to top ↑</a></p>
+
+## 📜 License
+
+This project is currently intended for educational and research purposes. A project-specific license can be added here once finalized.
+
+<div align="center">
+
+---
+
+Built as a collaborative end-to-end AI/ML capstone.
+
+<a href="#readme-top">⬆ back to top</a>
+
+</div>
